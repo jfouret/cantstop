@@ -1,0 +1,4 @@
+.coverage
+.pytest_cache
+notebook.ipynb
+__pycache__/
