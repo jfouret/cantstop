@@ -7,6 +7,7 @@ from gymnasium.spaces.utils import flatten
 class Rule(Enum):
     # target the best 3 and pass or play randomly and replay
     TARGET_BESTS_AND_PASS = 1
+    RANDOM = 2
 
 
 class RuleBasedAgent():
@@ -40,6 +41,17 @@ class RuleBasedAgent():
                         self._rng.choice(
                             [k for k in info["possible_values"].keys()])]),
                     "throw_dices": 1
+                })
+            return action
+        elif self._rule == Rule.RANDOM:
+            info = env._get_info()
+            action = action = flatten(env.action_space, {
+                    "pair_of_dice_chosen":
+                    self._rng.choice(
+                      info["possible_values"][
+                        self._rng.choice(
+                            [k for k in info["possible_values"].keys()])]),
+                    "throw_dices": self._rng.randint(0, 2)
                 })
             return action
         else:
