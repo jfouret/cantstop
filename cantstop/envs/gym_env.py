@@ -104,7 +104,6 @@ class GymEnv(gym.Env):
         self._throw_dices()
         self._bar_width = 0.9 / self._board.shape[0]
         self._cm = plt.get_cmap('Paired', self._board.shape[0])
-        self._throw_dices()
         return self._get_obs()
 
     def step(self, action: np.ndarray[np.float32]
