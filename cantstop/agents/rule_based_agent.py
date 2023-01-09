@@ -1,7 +1,7 @@
 from enum import Enum
 import numpy as np
-import gymnasium as gym
-from gymnasium.spaces.utils import flatten
+import gym
+from gym.spaces.utils import flatten
 
 
 class Rule(Enum):

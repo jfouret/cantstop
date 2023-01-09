@@ -7,8 +7,8 @@ from cantstop.envs.constants import (
 )
 
 import numpy as np
-import gymnasium as gym
-from gymnasium.spaces.utils import flatten, unflatten
+import gym
+from gym.spaces.utils import flatten, unflatten
 from typing import Type, Tuple, List
 import matplotlib.pyplot as plt
 
