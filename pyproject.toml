@@ -36,7 +36,7 @@ path = "cantstop/__about__.py"
 dependencies = [
   "pytest",
   "pytest-cov",
-  "gymn",
+  "gym",
   "numpy",
   "matplotlib",
   "flake8"
