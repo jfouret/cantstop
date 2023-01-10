@@ -52,7 +52,7 @@ class TfPyEnv(py_environment.PyEnvironment):
                         self._unsaved,
                         self._board.flatten(),
                         self._dice_values)),
-                    "mask": np.array([True]*11, dtype=np.bool_)
+                    "mask": np.array([True]*12, dtype=np.bool_)
                 })
 
     def seed(self, seed: types.Seed) -> None:
@@ -70,11 +70,12 @@ class TfPyEnv(py_environment.PyEnvironment):
           self._value_mask,
           self._board[0, ] + self._unsaved != B_HIGH
         )
+
         # get first dice comb value
         first_value = np.sum(
             self._dice_values[FIRST_PAIR_ENCODING[dice_comb]])
         # increment score or raise error
-        if value_mask[first_value]:
+        if not value_mask[first_value]:
             raise ValueError("Illegal action")
         self._unsaved[first_value] += 1
         # update mask
@@ -94,7 +95,7 @@ class TfPyEnv(py_environment.PyEnvironment):
                 self._unsaved + self._board[0, ] != B_HIGH
             )
 
-        if np.sum(self._unsaved + self._board[0, ] != B_HIGH) > 2:
+        if np.sum(self._unsaved + self._board[0, ] == B_HIGH) > 2:
             reward = 1
             return ts.termination(
                 {
@@ -102,7 +103,7 @@ class TfPyEnv(py_environment.PyEnvironment):
                         self._unsaved,
                         self._board.flatten(),
                         self._dice_values)),
-                    "mask": np.array([False]*11, dtype=np.bool_)
+                    "mask": np.array([False]*12, dtype=np.bool_)
                 },
                 reward)
 
@@ -110,34 +111,33 @@ class TfPyEnv(py_environment.PyEnvironment):
             # save and stop
             self._value_mask = value_mask
             self._board[0, ] = self._unsaved + self._board[0, ]
-            self._unsaved = np.zeros(11, dtype=np.uint8)
-            self._board = np.roll(self._board, 1, axis=0)
-            self._turn += 1
-            reward = -1
+            self._next_player()
+            reward = - 0.5
         elif play_or_pass == 1:
             reward = 0
-        else:
-            raise ValueError("Unrecognized action")
 
         any_legal_value = False
         while not any_legal_value:
             self._throw_dices()
-            comb_mask = \
+            comb_mask = np.array(
                 [value_mask[np.sum(self._dice_values[FIRST_PAIR_ENCODING[i]])]
-                 for i in range(6)]
+                 for i in range(6)], dtype=np.bool_)
             any_legal_value = np.any(comb_mask)
             if not any_legal_value:
                 reward = -1
-                self._unsaved = np.zeros(11, dtype=np.uint8)
-                self._board = np.roll(self._board, 1, axis=0)
-                self._turn += 1
+                self._next_player()
 
         obs = {
             "observation": np.concatenate((
                 self._unsaved,
                 self._board.flatten(),
                 self._dice_values)),
-            "mask": comb_mask * 2
+            "mask": np.concatenate((comb_mask, comb_mask), dtype=np.bool_)
             }
 
         return ts.transition(obs, reward)
+
+    def _next_player(self) -> None:
+        self._unsaved = np.zeros(11, dtype=np.uint8)
+        self._board = np.roll(self._board, 1, axis=0)
+        self._turn += 1
