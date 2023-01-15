@@ -1,25 +1,56 @@
-FROM mcr.microsoft.com/devcontainers/base:bionic
+#https://hub.docker.com/_/microsoft-vscode-devcontainers
 
-RUN apt-get update \
-    && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get install -y git \ 
-    && apt-get install -y build-essential \
-    && apt-get install -y wget \
-    && apt-get clean  \
-    && rm -rf /var/lib/apt/lists/*
-
-ARG PYTHON_VERSION=310
+ARG PYTHON_VERSION=3.10
 ARG CONDA_VERSION=22.11.1-1
-ARG NUMPY_VERSION=
+ARG NUMPY_VERSION=1.23.5
+ARG TF_VERSION=2.11.0
+ARG REVERB_VERSION=0.10.0
+ARG TF_AGENTS_VERSION=0.15.0
+
+# Mixes between nvidia/cuda and tensorflow docker images
+
+FROM tensorflow/tensorflow:${TF_VERSION}-gpu
+
+# Let us install tzdata painlessly
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Needed for string substitution
+SHELL ["/bin/bash", "-c"]
+
+#RUN apt-get update \
+#    && apt-get install -y \
+#        wget \
+#    && rm -rf /var/lib/apt/lists/*
 
 # Install miniconda
-ENV CONDA_DIR /opt/conda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py${PYTHON_VERSION}_${CONDA_VERSION}-Linux-x86_64.sh -O ~/miniconda.sh \
-    && /bin/bash ~/miniconda.sh -b -p /opt/conda
+#ENV CONDA_DIR /opt/conda
+
+#RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py${PYTHON_VERSION/./}_${CONDA_VERSION}-Linux-x86_64.sh -O ~/miniconda.sh \
+#    && /bin/bash ~/miniconda.sh -b -p /opt/conda
+
 # Put conda in path so we can use conda activate
-ENV PATH=$CONDA_DIR/bin:$PATH
+#ENV PATH=$CONDA_DIR/bin:$PATH
+
+#RUN python3 -m pip --no-cache-dir install --upgrade \
+#    "pip<20.3" \
+#    setuptools
 
 # install tensorflow
-RUN conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
-ENV LD_LIBRARY_PATH=$CONDA_DIR/lib/
-RUN python3 -m pip install numpy==1.23.5 tensorflow==2.11.0
+RUN python3 -m pip install \
+    dm-reverb \
+    tf-agents \
+    matplotlib \
+    ipykernel
+#    numpy==$NUMPY_VERSION \
+#    tensorflow-gpu==$TF_VERSION
+
+RUN apt-get update \
+    && apt-get install -y \
+        xvfb \
+        ffmpeg \
+        freeglut3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install \
+    'imageio==2.4.0' \
+    pyvirtualdisplay

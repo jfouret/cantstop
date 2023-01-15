@@ -1,15 +1,43 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Ubuntu",
+	"name": "tensorflow-cantstop",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-
 	"build": {
 		// Path is relataive to the devcontainer.json file.
 		"dockerfile": "Dockerfile"
 	},
 
-	"runArgs": [ "--gpus", "all", "-e", "TF_CPP_MIN_LOG_LEVEL=3" ]
+	"runArgs": [ "--gpus", "all", "-e", "TF_CPP_MIN_LOG_LEVEL=3" ],
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.flake8",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"VisualStudioExptTeam.intellicode-api-usage-examples",
+				"VisualStudioExptTeam.vscodeintellicode-completions",
+				"VisualStudioExptTeam.vscodeintellicode-insiders",
+				"ms-python.isort",
+				"ms-toolsai.jupyter",
+				"ms-toolsai.jupyter-keymap",
+				"ms-toolsai.vscode-jupyter-cell-tags",
+				"ms-toolsai.jupyter-renderers",
+				"ms-toolsai.vscode-jupyter-slideshow",
+				"ms-python.vscode-pylance",
+				"ms-python.python",
+				"donjayamanne.python-environment-manager",
+				"KevinRose.vsc-python-indent",
+				"mgesbert.python-path",
+				"littlefoxteam.vscode-python-test-adapter",
+				"njqdev.vscode-python-typehint",
+				"ms-vscode.test-adapter-converter",
+				"hbenl.vscode-test-explorer"
+			]
+		}
+	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
